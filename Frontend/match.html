@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live IPL Matches</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #4f5bff;
+            --secondary: #6a67ce;
+            --accent: #ff4f8b;
+            --background: #0f0c29;
+            --card-bg: rgba(35, 36, 74, 0.8);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b3d6;
+            --rcb-color: #EC1C24;
+            --csk-color: #FFFF00;
+            --mi-color: #004BA0;
+            --kkr-color: #3A225D;
+            --dc-color: #0078BC;
+            --srh-color: #FF822A;
+            --pk-color: #D71920;
+            --rr-color: #254AA5;
+            --lsg-color: #A0E1FF;
+            --gt-color: #1C1C1C;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(35, 36, 74, 0.5);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-section {
+            margin-top: 20px;
+        }
+
+        .hero-text {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        #matches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .match {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 0;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .match:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .match-header {
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .match h2 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .match-content {
+            padding: 25px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .teams-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #fff;
+            padding: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .match:hover .team-logo {
+            transform: scale(1.1);
+        }
+
+        .team-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .vs {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(255, 79, 139, 0.5);
+            margin: 0 10px;
+        }
+
+        .score {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--accent);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .match-status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .upcoming {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        }
+
+        .live {
+            background: linear-gradient(90deg, #F44336, #FF9800);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+        }
+
+        .no-matches {
+            text-align: center;
+            padding: 40px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .flag-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.1;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .flag-left, .flag-right {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s ease;
+        }
+
+        .flag-left {
+            left: 0;
+            transform: skewX(5deg) translateX(-10%);
+        }
+
+        .flag-right {
+            right: 0;
+            transform: skewX(-5deg) translateX(10%);
+        }
+
+        .match:hover .flag-left {
+            transform: skewX(8deg) translateX(-5%);
+        }
+
+        .match:hover .flag-right {
+            transform: skewX(-8deg) translateX(5%);
+        }
+
+        .venue {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #matches {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .team-logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .vs {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Live IPL Matches</h1>
+            <div class="hero-section">
+                <p class="hero-text">Stay updated with the latest IPL matches and scores</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">LIVE</span>
+                        <span class="stat-label">Updates</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">IPL</span>
+                        <span class="stat-label">2025</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">10</span>
+                        <span class="stat-label">Teams</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div id="loading" style="text-align: center; padding: 40px;">
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 20px; color: var(--text-secondary); font-size: 1.2rem;">Loading match data...</p>
+        </div>
+        <div id="matches"></div>
+    </div>
+    <script type="module">
+        import config from './config.js';
+
+        function formatDate(date) {
+            // Returns YYYY-MM-DD
+            return date.toISOString().split('T')[0];
+        }
+
+        function getTeamShortName(teamName) {
+            const shortNames = {
+                "Chennai Super Kings": "CSK",
+                "Delhi Capitals": "DC",
+                "Gujarat Titans": "GT",
+                "Kolkata Knight Riders": "KKR",
+                "Lucknow Super Giants": "LSG",
+                "Mumbai Indians": "MI",
+                "Punjab Kings": "PK",
+                "Rajasthan Royals": "RR",
+                "Royal Challengers Bengaluru": "RCB",
+                "Sunrisers Hyderabad": "SRH"
+            };
+            return shortNames[teamName] || "";
+        }
+
+        async function fetchMatches() {
+            const loadingDiv = document.getElementById('loading');
+            const matchesDiv = document.getElementById('matches');
+
+            try {
+                // Try to fetch from the API first
+                try {
+                    const res = await fetch(`${config.apiBaseUrl}/api/live-matches`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        // Set a timeout to avoid waiting too long
+                        signal: AbortSignal.timeout(5000) // 5 second timeout
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`API returned status: ${res.status}`);
+                    }
+
+                    const data = await res.json();
+                    renderMatches(data);
+                    return; // Exit if API call was successful
+                } catch (apiError) {
+                    console.error('API Error:', apiError);
+                    // Continue to fallback if API fails
+                }
+
+                // Fallback: Use static JSON file if API fails
+                console.log('Falling back to static JSON file');
+                const res = await fetch(`${config.staticBaseUrl}/ipl_matches_2025.json`);
+                if (!res.ok) {
+                    throw new Error(`Failed to load static data: ${res.status}`);
+                }
+                const data = await res.json();
+                renderMatches(data);
+            } catch (error) {
+                console.error('Error fetching matches:', error);
+                loadingDiv.style.display = 'none';
+                matchesDiv.innerHTML = '<div class="no-matches">Unable to load match data. Please try again later.</div>';
+            }
+        }
+
+        // Separate function to render matches
+        function renderMatches(data) {
+            const loadingDiv = document.getElementById('loading');
+            const matchesDiv = document.getElementById('matches');
+
+            // Hide loading
+            loadingDiv.style.display = 'none';
+            matchesDiv.innerHTML = '';
+
+            // Display live matches
+            if (data.current_matches && data.current_matches.length > 0) {
+                data.current_matches.forEach(match => {
+                    const team1 = match.teams[0].team_name;
+                    const team2 = match.teams[1].team_name;
+                    const team1Short = getTeamShortName(team1);
+                    const team2Short = getTeamShortName(team2);
+
+                    matchesDiv.innerHTML += `
+                        <div class="match animate__animated animate__fadeIn">
+                            <div class="flag-background">
+                                <div class="flag-left" style="background-image: url('${config.staticBaseUrl}/flags/${team1.replace(/ /g, '_')}.png');"></div>
+                                <div class="flag-right" style="background-image: url('${config.staticBaseUrl}/flags/${team2.replace(/ /g, '_')}.png');"></div>
+                            </div>
+                            <div class="match-header">
+                                <h2>${match.match_full_name}</h2>
+                            </div>
+                            <div class="match-content">
+                                <div class="teams-container">
+                                    <div class="team">
+                                        <img src="${config.staticBaseUrl}/flags/${team1.replace(/ /g, '_')}.png" alt="${team1}" class="team-logo">
+                                        <div class="team-name">${team1Short}</div>
+                                    </div>
+                                    <div class="vs">VS</div>
+                                    <div class="team">
+                                        <img src="${config.staticBaseUrl}/flags/${team2.replace(/ /g, '_')}.png" alt="${team2}" class="team-logo">
+                                        <div class="team-name">${team2Short}</div>
+                                    </div>
+                                </div>
+                                <div class="score">${match.match_status}</div>
+                                <div class="venue">${match.venue || 'Venue information unavailable'}</div>
+                                <div style="text-align: center;">
+                                    <span class="match-status live">LIVE</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Display upcoming matches
+            const today = formatDate(new Date());
+            let upcomingCount = 0;
+
+            if (data.upcoming_matches && data.upcoming_matches.length > 0) {
+                data.upcoming_matches.forEach(match => {
+                    if (upcomingCount < 2) { // Limit to 2 upcoming matches
+                        const matchDate = match.game_date_time ? match.game_date_time.split('T')[0] : '';
+                        const team1 = match.teams[0].team_name;
+                        const team2 = match.teams[1].team_name;
+                        const team1Short = getTeamShortName(team1);
+                        const team2Short = getTeamShortName(team2);
+
+                        matchesDiv.innerHTML += `
+                            <div class="match animate__animated animate__fadeIn" style="animation-delay: ${0.2 * (upcomingCount + 1)}s;">
+                                <div class="flag-background">
+                                    <div class="flag-left" style="background-image: url('${config.staticBaseUrl}/flags/${team1.replace(/ /g, '_')}.png');"></div>
+                                    <div class="flag-right" style="background-image: url('${config.staticBaseUrl}/flags/${team2.replace(/ /g, '_')}.png');"></div>
+                                </div>
+                                <div class="match-header">
+                                    <h2>${match.match_full_name}</h2>
+                                </div>
+                                <div class="match-content">
+                                    <div class="teams-container">
+                                        <div class="team">
+                                            <img src="${config.staticBaseUrl}/flags/${team1.replace(/ /g, '_')}.png" alt="${team1}" class="team-logo">
+                                            <div class="team-name">${team1Short}</div>
+                                        </div>
+                                        <div class="vs">VS</div>
+                                        <div class="team">
+                                            <img src="${config.staticBaseUrl}/flags/${team2.replace(/ /g, '_')}.png" alt="${team2}" class="team-logo">
+                                            <div class="team-name">${team2Short}</div>
+                                        </div>
+                                    </div>
+                                    <div class="score">Starts at: ${match.game_date_time ? match.game_date_time.replace('T', ' ').slice(0, 16) : 'Time TBD'}</div>
+                                    <div class="venue">${match.venue || 'Venue information unavailable'}</div>
+                                    <div style="text-align: center;">
+                                        <span class="match-status upcoming">UPCOMING</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        upcomingCount++;
+                    }
+                });
+            }
+
+            // If no matches at all
+            if ((data.current_matches && data.current_matches.length === 0) && upcomingCount === 0) {
+                matchesDiv.innerHTML = '<div class="no-matches">No live or upcoming matches available.</div>';
+            }
+        }
+
+        // Initial load
+        fetchMatches();
+
+        // Refresh every 60 seconds
+        setInterval(fetchMatches, 60000);
+    </script>
+</body>
+</html>

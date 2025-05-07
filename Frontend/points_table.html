@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Points Table</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        /* Replace the :root variables with these */
+        :root {
+            --primary: #4f5bff;
+            --secondary: #6a67ce;
+            --accent: #ff4f8b;
+            --highlight: #ff4f8b;
+            --background: #0f0c29;
+            --card-bg: rgba(35, 36, 74, 0.8);
+            --header-bg: rgba(16, 17, 36, 0.9);
+            --row-even: rgba(35, 36, 74, 0.7);
+            --row-odd: rgba(25, 26, 54, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b3d6;
+        }
+
+        /* Replace the body background with this */
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Montserrat', Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Remove the body::before overlay since we're using a direct gradient background */
+        body::before {
+            content: none;
+        }
+
+        /* Update the container to match index.html */
+        .container {
+            max-width: 800px;
+            margin: 2em auto;
+            background: rgba(35, 36, 74, 0.8);
+            border-radius: 16px;
+            padding: 2em;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 1em;
+            background: linear-gradient(90deg, var(--highlight), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(247, 37, 133, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--highlight), var(--accent));
+            border-radius: 2px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            animation: slideInUp 0.8s ease-out;
+            animation-delay: 0.2s;
+            animation-fill-mode: both;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1em;
+            background: transparent;
+        }
+
+        th, td {
+            padding: 16px 12px;
+            text-align: center;
+            border: none;
+        }
+
+        th {
+            background: var(--header-bg);
+            color: var(--text-primary);
+            font-size: 1.1em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        th:first-child {
+            border-top-left-radius: 16px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 16px;
+        }
+
+        tr:nth-child(even) {
+            background: var(--row-even);
+        }
+
+        tr:nth-child(odd) {
+            background: var(--row-odd);
+        }
+
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 16px;
+        }
+
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 16px;
+        }
+
+        tr {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(67, 97, 238, 0.3);
+        }
+
+        .team-cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .team-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fff;
+            padding: 2px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .team-name {
+            font-weight: 600;
+        }
+
+        .rank-cell {
+            font-weight: 700;
+            font-size: 1.2em;
+            color: var(--accent);
+        }
+
+        .points-cell {
+            font-weight: 700;
+            font-size: 1.2em;
+            color: var(--highlight);
+        }
+
+        .nrr-cell {
+            font-weight: 600;
+        }
+
+        .positive-nrr {
+            color: #4ade80;
+        }
+
+        .negative-nrr {
+            color: #f87171;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 3em 0;
+            font-size: 1.2em;
+            background: var(--row-odd);
+            border-radius: 16px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .refresh-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 1.5em;
+            gap: 15px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(90deg, var(--accent), var(--secondary));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(76, 201, 240, 0.3);
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.5);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .last-updated {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        /* Make the table header sticky */
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Enhanced container with more modern styling */
+        .container {
+            max-width: 1000px;
+            margin: 2em auto;
+            background: rgba(35, 36, 74, 0.8);
+            border-radius: 20px;
+            padding: 2.5em;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* More vibrant header styling */
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 1em;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(247, 37, 133, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        /* Enhanced table styling */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 20px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+            animation: slideInUp 0.8s ease-out;
+            animation-delay: 0.2s;
+            animation-fill-mode: both;
+        }
+
+        /* More pronounced table headers */
+        th {
+            background: var(--header-bg);
+            color: var(--text-primary);
+            font-size: 1.15em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 18px 15px;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Enhanced row hover effect */
+        tr:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            background: rgba(79, 91, 255, 0.25);
+        }
+
+        /* Enhanced team cell */
+        .team-cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+            text-align: left;
+        }
+
+        /* Larger team logos */
+        .team-logo {
+            width: 55px;  /* Increased from 42px */
+            height: 55px; /* Increased from 42px */
+            border-radius: 50%;
+            background: #fff;
+            padding: 4px;  /* Increased from 3px */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25); /* Enhanced shadow */
+            transition: transform 0.3s ease;
+        }
+
+        /* Adjust team cell spacing to accommodate larger logos */
+        .team-cell {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 18px; /* Increased from 15px */
+            text-align: left;
+        }
+
+        /* Responsive adjustments for mobile */
+        @media (max-width: 768px) {
+            .team-logo {
+                width: 40px; /* Increased from 28px */
+                height: 40px; /* Increased from 28px */
+            }
+        }
+
+        tr:hover .team-logo {
+            transform: scale(1.1);
+        }
+
+        /* Enhanced refresh button */
+        .refresh-btn {
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(79, 91, 255, 0.3);
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(79, 91, 255, 0.4);
+        }
+
+        /* Enhanced animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 2em 1em;
+                padding: 1.5em;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            th, td {
+                padding: 12px 8px;
+                font-size: 0.9em;
+            }
+
+            .team-logo {
+                width: 28px;
+                height: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IPL 2025 Points Table</h1>
+        <div class="refresh-controls">
+            <button id="refresh-button" class="refresh-btn">Refresh Data</button>
+            <span class="last-updated">Last updated: <span id="last-updated">-</span></span>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Team</th>
+                        <th>Played</th>
+                        <th>Won</th>
+                        <th>Lost</th>
+                        <th>Tied</th>
+                        <th>NR</th>
+                        <th>Points</th>
+                        <th>NRR</th>
+                    </tr>
+                </thead>
+                <tbody id="points-table-body">
+                    <!-- JS will populate this -->
+                </tbody>
+            </table>
+            <div class="no-data" id="no-data-msg" style="display:none;">No points table data available.</div>
+        </div>
+    </div>
+    <script type="module">
+        import config from './config.js';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to fetch and display data
+            function fetchAndDisplayData() {
+                // Fetch from local JSON file
+                // Update the fetch path to point to the Backend folder
+fetch(`${config.staticBaseUrl}/points_table.json`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to load data: ' + response.status);
+        }
+        return response.json();
+    })
+                    .then(data => {
+                        console.log("JSON data:", data);
+
+                        // Extract teams from the nested structure
+                        let teams = [];
+                        if (data.table && Array.isArray(data.table) && data.table[0].table &&
+                            Array.isArray(data.table[0].table) && data.table[0].table[0].group) {
+                            teams = data.table[0].table[0].group;
+                        }
+
+                        if (teams.length === 0) {
+                            throw new Error('No team data found in JSON');
+                        }
+
+                        displayData(teams);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('no-data-msg').style.display = 'block';
+                        document.getElementById('no-data-msg').textContent =
+                            'Unable to load points table data. Please try again later.';
+                    });
+            }
+
+            // Display the data
+            function displayData(teams) {
+                const tbody = document.getElementById('points-table-body');
+                const noDataMsg = document.getElementById('no-data-msg');
+                tbody.innerHTML = '';
+
+                if (!teams || teams.length === 0) {
+                    noDataMsg.style.display = 'block';
+                    return;
+                }
+
+                noDataMsg.style.display = 'none';
+
+                // Add animation delay for staggered entrance
+                teams.forEach((team, index) => {
+                    const row = document.createElement('tr');
+                    row.style.animationDelay = `${0.1 * (index + 1)}s`;
+
+                    // Format NRR with + sign for positive values
+                    const nrr = parseFloat(team.nrr) || 0;
+                    const nrrFormatted = nrr > 0 ? `+${nrr}` : nrr;
+                    const nrrClass = nrr >= 0 ? 'positive-nrr' : 'negative-nrr';
+
+                    // In the displayData function, update the team logo source path
+                    row.innerHTML = `
+                        <td class="rank-cell">${team.position || ''}</td>
+                        <td>
+                            <div class="team-cell">
+                                <img src="${config.staticBaseUrl}/flags/${team.team_name.replace(/ /g, '_')}.png" alt="${team.team_name}" class="team-logo" onerror="this.src=`${config.staticBaseUrl}/team_logos/default.png`">
+                                <span class="team-name">${team.team_name || ''}</span>
+                            </div>
+                        </td>
+                        <td>${team.played || ''}</td>
+                        <td>${team.won || ''}</td>
+                        <td>${team.lost || ''}</td>
+                        <td>${team.tied || 0}</td>
+                        <td>${team.no_result || 0}</td>
+                        <td class="points-cell">${team.points || ''}</td>
+                        <td class="nrr-cell ${nrrClass}">${nrrFormatted}</td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+
+                // Update last refreshed time
+                const lastUpdatedEl = document.getElementById('last-updated');
+                if (lastUpdatedEl) {
+                    lastUpdatedEl.textContent = new Date().toLocaleTimeString();
+                }
+            }
+
+            // Initial data load
+            fetchAndDisplayData();
+
+            // Add refresh button functionality
+            const refreshBtn = document.getElementById('refresh-button');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', fetchAndDisplayData);
+            }
+        });
+    </script>
+</body>
+</html>
