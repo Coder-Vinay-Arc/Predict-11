@@ -8,8 +8,8 @@ const config = {
     
     // Production environment (deployed)
     production: {
-        apiBaseUrl: 'https://ipl-fantasy-backend.onrender.com', // Replace with your actual Render domain
-        staticBaseUrl: 'https://ipl-fantasy-backend.onrender.com/static'
+        apiBaseUrl: 'https://predict-11.onrender.com', // Replace with your actual Render domain
+        staticBaseUrl: 'https://predict-11.onrender.com/static'
     }
 };
 
