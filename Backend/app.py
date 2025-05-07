@@ -101,7 +101,7 @@ def analyze():
         return jsonify({'error': 'Both batsman and bowler names are required'}), 400
 
     try:
-        result = analyze_batter_vs_bowler("c:\Users\Vinay Gupta\AppData\Local\Packages\5319275A.WhatsAppDesktop_cv1g1gvanyjgm\TempState\892AFFBF0CA609FA5973B694E30A5791\deliveries.csv.csv", batter_name, bowler_name)
+        result = analyze_batter_vs_bowler("deliveries.csv", batter_name, bowler_name)
         if result is None:
             return jsonify({'error': f'No head-to-head data found between {batter_name} and {bowler_name}.'}), 404
 
